@@ -1,0 +1,16 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Meter {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  peaNoNew      String
+  pickerName    String
+  pickerDate     DateTime
+  newMeterImage String   // เก็บ URL หรือ path ของรูปภาพ
+}
