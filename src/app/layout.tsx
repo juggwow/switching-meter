@@ -2,6 +2,11 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import QueryClientProvider from "@/provider/query-client-provider";
+import AntdConfigProvider, {
+  ThemeContext,
+} from "@/provider/antd-config-provider";
+import { ThemeProvider } from "@/provider/theme-provider";
+import AntdRegistry from "@/provider/antd-registry";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,11 +29,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning key="app-root">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <QueryClientProvider>{children}</QueryClientProvider>
+        <QueryClientProvider>
+          <AntdRegistry>
+            <ThemeProvider>
+              <AntdConfigProvider>{children}</AntdConfigProvider>
+            </ThemeProvider>
+          </AntdRegistry>
+        </QueryClientProvider>
       </body>
     </html>
   );
