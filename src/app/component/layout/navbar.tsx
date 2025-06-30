@@ -45,7 +45,6 @@ export default function Navbar({
       {/* User Info and Notifications */}
       <Space size="middle">
         {/* Notification Bell */}
-        <ThemeToggle/>
         <Badge count={notificationCount} offset={[0, 0]}>
           <Button
             type="text"

@@ -1,45 +1,6 @@
-/* src/app/globals.css */
-
 @import "tailwindcss";
 @import 'leaflet/dist/leaflet.css';
-
-/* กำหนด Custom Properties (CSS Variables) สำหรับสีพื้นหลังและสีข้อความ */
-/* ค่าเริ่มต้นเหล่านี้จะถูกใช้เมื่อไม่มี class="dark" บน html */
 :root {
-  --app-background: #f0f2f5; /* Light mode background (ตาม Ant Design) */
-  --app-foreground: #171717; /* Light mode text color */
+  --background: #ffffff;
+  --foreground: #171717;
 }
-
-/* เมื่อ html มี class="dark" (ถูกกำหนดโดย next-themes) */
-html.dark {
-  --app-background: #141414; /* Dark mode background (ตาม Ant Design) */
-  --app-foreground: #ededed; /* Dark mode text color */
-}
-
-html.light{
-  --app-background: #f0f2f5; /* Light mode background (ตาม Ant Design) */
-  --app-foreground: #171717; /* Light mode text color */
-}
-
-/* ลบ @media (prefers-color-scheme: dark) ออกไป เพื่อไม่ให้มันมาขัดแย้ง */
-/* ถ้าอยากใช้ prefers-color-scheme เป็นค่าเริ่มต้นตอนโหลดครั้งแรก (ถ้าไม่มี localStorage)
-   next-themes จะจัดการให้เองอยู่แล้ว */
-
-
-body {
-  background: var(--app-background); /* ใช้ตัวแปรที่เรากำหนดเอง */
-  color: var(--app-foreground); /* ใช้ตัวแปรที่เรากำหนดเอง */
-  font-family: Arial, Helvetica, sans-serif;
-  margin: 0;
-  padding: 0;
-}
-
-/* คุณอาจจะต้องปรับสีข้อความทั่วไปใน component ย่อยๆ ด้วย Tailwind's dark:text-white */
-/* หรือถ้าต้องการให้ Form มีพื้นหลังสีขาว/เทา ก็ใช้ class ใน component นั้นๆ */
-/* ตัวอย่าง: */
-/* .your-form-container {
-  background-color: white;
-}
-html.dark .your-form-container {
-  background-color: #1f1f1f;
-} */

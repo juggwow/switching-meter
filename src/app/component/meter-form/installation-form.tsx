@@ -12,7 +12,7 @@ import {
   DatePicker,
   Button,
   UploadFile,
-  App,
+  message,
   UploadProps,
   Space,
 } from "antd";
@@ -24,7 +24,6 @@ import { Meter } from "@prisma/client";
 import { submitInstallationForm } from "./action";
 
 import dynamic from "next/dynamic";
-import { set } from "zod/v4-mini";
 
 // Dynamic import เพื่อไม่ให้แผนที่ถูกเรนเดอร์ฝั่ง Server (ป้องกัน error)
 const LocationMap = dynamic(() => import("../map/location-map"), {
@@ -43,7 +42,6 @@ const urlToFile = async (
 };
 
 export default function InstallationFormComponent({ meter }: { meter: Meter }) {
-  const { message } = App.useApp();
   const {
     handleSubmit,
     resetField,
@@ -253,7 +251,7 @@ export default function InstallationFormComponent({ meter }: { meter: Meter }) {
     <Form
       layout="vertical"
       onFinish={handleSubmit(onSubmit)}
-      className="max-w-xl mx-auto mt-10 rounded shadow-md border-1 border-slate-400"
+      className="max-w-xl mx-auto mt-10 rounded shadow-md "
       style={{ padding: "24px" }}
     >
       <p>ข้อมูลมิเตอร์เก่า</p>

@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { submitMeterForm, updateMeterForm } from "./action";
 import {
-  App,
+  message,
   Form,
   Input,
   Button,
@@ -36,7 +36,6 @@ const urlToFile = async (
 
 export default function PickerMeterFormComponent({ meter }: { meter?: Meter }) {
   const router = useRouter();
-  const { message } = App.useApp();
   const {
     handleSubmit,
     resetField,
@@ -156,7 +155,7 @@ export default function PickerMeterFormComponent({ meter }: { meter?: Meter }) {
     <Form
       layout="vertical"
       onFinish={handleSubmit(onSubmit)}
-      className="max-w-xl mx-auto mt-10 rounded shadow-md border-1 border-slate-400"
+      className="max-w-xl mx-auto mt-10 rounded shadow-md"
       style={{ padding: "24px" }}
     >
       <Form.Item

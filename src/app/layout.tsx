@@ -40,16 +40,8 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <QueryClientProvider>
-          <AntdRegistry>
-            <ThemeProvider>
-              <AntdConfigProvider>
-                <App>
-                  <Navbar />
-                  {children}
-                </App>
-              </AntdConfigProvider>
-            </ThemeProvider>
-          </AntdRegistry>
+          <Navbar />
+          {children}
         </QueryClientProvider>
       </body>
     </html>

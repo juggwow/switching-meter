@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card, Space, Button, Pagination, App, Typography, Col, Row, Image } from 'antd'; // เพิ่ม Image component
+import { Card, Space, Button, Pagination, Typography, Col, Row, Image, message } from 'antd'; // เพิ่ม Image component
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { fetchMeters, FetchMetersResult } from './action';
@@ -32,7 +32,6 @@ interface MeterTableData {
 const PAGE_SIZE_OPTIONS = [10, 20, 50];
 
 export default function MeterListComponent({mode}:{mode:"waiting_installation"|"statuslist"}) {
-  const { message } = App.useApp();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTIONS[0]);
 
@@ -64,7 +63,7 @@ export default function MeterListComponent({mode}:{mode:"waiting_installation"|"
   };
 
   return (
-    <div className="p-6 rounded-lg shadow-md max-w-2xl mx-auto">
+    <div className="p-6 max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">รายการมิเตอร์</h1>
 
       {isLoading ? (
@@ -79,7 +78,6 @@ export default function MeterListComponent({mode}:{mode:"waiting_installation"|"
                 className="meter-list-card" // เพิ่ม className สำหรับ custom style
                 style={{
                   borderRadius: '8px',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
                   width: '100%', // ทำให้ Card เต็มความกว้างของ parent (Column เดียว)
                 }}
               >
