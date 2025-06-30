@@ -7,6 +7,7 @@ import AntdConfigProvider, {
 } from "@/provider/antd-config-provider";
 import { ThemeProvider } from "@/provider/theme-provider";
 import AntdRegistry from "@/provider/antd-registry";
+import Navbar from "./component/layout/navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,7 +37,10 @@ export default function RootLayout({
         <QueryClientProvider>
           <AntdRegistry>
             <ThemeProvider>
-              <AntdConfigProvider>{children}</AntdConfigProvider>
+              <AntdConfigProvider>
+                <Navbar />
+                {children}
+              </AntdConfigProvider>
             </ThemeProvider>
           </AntdRegistry>
         </QueryClientProvider>

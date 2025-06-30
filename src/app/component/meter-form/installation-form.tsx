@@ -14,6 +14,7 @@ import {
   UploadFile,
   App,
   UploadProps,
+  Space,
 } from "antd";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
@@ -21,6 +22,15 @@ import { Controller, useForm } from "react-hook-form";
 import { UploadOutlined } from "@ant-design/icons";
 import { Meter } from "@prisma/client";
 import { submitInstallationForm } from "./action";
+
+import dynamic from "next/dynamic";
+import { set } from "zod/v4-mini";
+
+// Dynamic import เพื่อไม่ให้แผนที่ถูกเรนเดอร์ฝั่ง Server (ป้องกัน error)
+const LocationMap = dynamic(() => import("../map/location-map"), {
+  ssr: false,
+  loading: () => <p>กำลังโหลดแผนที่...</p>,
+});
 
 const urlToFile = async (
   url: string,
@@ -32,7 +42,7 @@ const urlToFile = async (
   return new File([blob], filename, { type: mimeType || blob.type });
 };
 
-export default function InstallationForm({ meter }: { meter: Meter }) {
+export default function InstallationFormComponent({ meter }: { meter: Meter }) {
   const { message } = App.useApp();
   const {
     handleSubmit,
@@ -46,7 +56,8 @@ export default function InstallationForm({ meter }: { meter: Meter }) {
   });
 
   const mutation = useMutation({
-    mutationFn: (data: InstallationFormData) => submitInstallationForm(data,isRemoveImage),
+    mutationFn: (data: InstallationFormData) =>
+      submitInstallationForm(data, isRemoveImage),
     onSuccess: async (data) => {
       try {
         // message.success() จะคืนค่าเป็น Promise
@@ -69,6 +80,21 @@ export default function InstallationForm({ meter }: { meter: Meter }) {
     isRemoveNewImage: false,
     isRemoveOldImage: false,
   });
+  const [isGpsLoading, setIsGpsLoading] = useState(false);
+  const initialMapPosition = () => {
+    if (meter.installationLocation) {
+      const [lat, lon] = meter.installationLocation
+        .split(",")
+        .map((part) => parseFloat(part.trim()));
+      if (!isNaN(lat) && !isNaN(lon)) {
+        return [lat, lon] as [number, number];
+      }
+    }
+    return null; // หรือ [0, 0] เป็นค่า default ถ้าไม่ต้องการ null
+  };
+  const [mapPosition, setMapPosition] = useState<[number, number] | null>(
+    initialMapPosition
+  );
 
   const handlePreview = async (file: UploadFile) => {
     if (!file.url && !file.preview) {
@@ -81,6 +107,48 @@ export default function InstallationForm({ meter }: { meter: Meter }) {
 
     setPreviewImage(file.url || (file.preview as string));
     setPreviewOpen(true);
+  };
+
+  const handleGetGps = () => {
+    if (navigator.geolocation) {
+      setIsGpsLoading(true);
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          const locationString = `${latitude.toFixed(6)}, ${longitude.toFixed(
+            6
+          )}`;
+          setValue("installationLocation", locationString, {
+            shouldValidate: true,
+          });
+          setMapPosition([latitude, longitude]);
+          setIsGpsLoading(false);
+          message.success("ดึงข้อมูล GPS สำเร็จ");
+        },
+        (error) => {
+          console.error("Error getting GPS location:", error);
+          let errorMessage = "ไม่สามารถดึงข้อมูล GPS ได้";
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              errorMessage += ": ผู้ใช้ปฏิเสธการเข้าถึงตำแหน่ง";
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMessage += ": ข้อมูลตำแหน่งไม่พร้อมใช้งาน";
+              break;
+            case error.TIMEOUT:
+              errorMessage += ": หมดเวลาในการร้องขอตำแหน่ง";
+              break;
+            default:
+              errorMessage += ": เกิดข้อผิดพลาดที่ไม่รู้จัก";
+              break;
+          }
+          message.error(errorMessage);
+          setIsGpsLoading(false);
+        }
+      );
+    } else {
+      message.error("เบราว์เซอร์นี้ไม่รองรับ Geolocation");
+    }
   };
 
   const handleNewChange: UploadProps["onChange"] = (info) => {
@@ -103,6 +171,28 @@ export default function InstallationForm({ meter }: { meter: Meter }) {
     }
   };
 
+  const handleBeforeUpload: UploadProps["beforeUpload"] = (file) => {
+    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+    if (!isJpgOrPng) {
+      message.error("คุณสามารถอัปโหลดไฟล์ JPG/PNG เท่านั้น!");
+      return Upload.LIST_IGNORE;
+    }
+
+    const isLt10M = file.size / 1024 / 1024 < 4; // ตรวจสอบขนาดไฟล์ก่อนบีบอัด
+    if (!isLt10M) {
+      message.error("ขนาดรูปภาพต้องไม่เกิน 4MB!");
+      return Upload.LIST_IGNORE;
+    }
+
+    return false;
+  };
+
+  const handleMapClick = (lat: number, lng: number) => {
+    setMapPosition([lat, lng]);
+    const locationString = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+    setValue("installationLocation", locationString);
+  };
+
   const onSubmit = (data: InstallationFormData) => {
     mutation.mutate(data);
   };
@@ -110,11 +200,12 @@ export default function InstallationForm({ meter }: { meter: Meter }) {
   useEffect(() => {
     // --- โหมดแก้ไข ---
     setValue("peaNoNew", meter.peaNoNew);
-    setValue("id",meter.id)
+    setValue("id", meter.id);
 
     meter.peaNoOld && setValue("peaNoOld", meter.peaNoOld);
-    meter.installationDate ?
-      setValue("installationDate", meter.installationDate) : setValue("installationDate", new Date());
+    meter.installationDate
+      ? setValue("installationDate", meter.installationDate)
+      : setValue("installationDate", new Date());
     meter.installationName &&
       setValue("installationName", meter.installationName);
     meter.unitOld && setValue("unitOld", meter.unitOld);
@@ -145,7 +236,7 @@ export default function InstallationForm({ meter }: { meter: Meter }) {
         uid: meter.id, // ใช้ ID ของ meter เป็น unique id
         name: "รูปมิเตอร์เดิม.jpg",
         status: "done",
-        url: meter.newMeterImageUrl,
+        url: meter.oldMeterImageUrl,
       };
       setOldFileList([fileForList]);
 
@@ -182,7 +273,8 @@ export default function InstallationForm({ meter }: { meter: Meter }) {
         fileList={oldFileList}
         onPreview={handlePreview}
         onChange={handleOldChange}
-        beforeUpload={() => false}
+        beforeUpload={handleBeforeUpload}
+        accept="image/jpeg,image/png"
         openFileDialogOnClick={oldFileList.length < 1}
       >
         {oldFileList.length < 1 && (
@@ -221,7 +313,8 @@ export default function InstallationForm({ meter }: { meter: Meter }) {
         fileList={newFileList}
         onPreview={handlePreview}
         onChange={handleNewChange}
-        beforeUpload={() => false}
+        beforeUpload={handleBeforeUpload}
+        accept="image/jpeg,image/png"
         openFileDialogOnClick={newFileList.length < 1}
       >
         {newFileList.length < 1 && (
@@ -253,8 +346,29 @@ export default function InstallationForm({ meter }: { meter: Meter }) {
         <Controller
           name="installationLocation"
           control={control}
-          render={({ field }) => <Input {...field} />}
+          render={({ field }) => (
+            <Space.Compact className="w-full">
+              <Input style={{ width: "calc(100% - 100px)" }} {...field} />
+              <Button
+                type="default"
+                onClick={handleGetGps}
+                loading={isGpsLoading}
+              >
+                GPS
+              </Button>
+            </Space.Compact>
+          )}
         />
+        <div
+          className="mt-4 rounded-md overflow-hidden"
+          style={{ height: "300px", width: "100%" }}
+        >
+          <LocationMap
+            onMapClick={handleMapClick}
+            latitude={mapPosition ? mapPosition[0]:undefined}
+            longitude={mapPosition ? mapPosition[1]:undefined}
+          />
+        </div>
       </Form.Item>
       <Form.Item
         label={<span className="mt-3">ชื่อผู้ติดตั้ง</span>}
@@ -272,7 +386,9 @@ export default function InstallationForm({ meter }: { meter: Meter }) {
         <DatePicker
           showTime
           // value ควบคุมโดย react-hook-form จึงไม่จำเป็นต้องใช้ defaultValue
-          value={watch("installationDate") ? dayjs(watch("installationDate")) : null}
+          value={
+            watch("installationDate") ? dayjs(watch("installationDate")) : null
+          }
           onChange={(date) => {
             if (date) setValue("installationDate", date.toDate());
           }}

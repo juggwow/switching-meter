@@ -34,7 +34,7 @@ const urlToFile = async (
   return new File([blob], filename, { type: mimeType || blob.type });
 };
 
-export default function NewMeterForm({ meter }: { meter?: Meter }) {
+export default function PickerMeterFormComponent({ meter }: { meter?: Meter }) {
   const router = useRouter();
   const { message } = App.useApp();
   const {
@@ -97,14 +97,30 @@ export default function NewMeterForm({ meter }: { meter?: Meter }) {
 
       // หน่วงเวลา 1.5 วินาทีก่อนเปลี่ยนหน้า
       setTimeout(() => {
-        router.push(`/meter/${data.id}`);
-      }, 1500);
+        router.push(`/`);
+      }, 500);
     },
   });
 
   const onSubmit = (data: MeterFormData) => {
     mutation.mutate(data);
   };
+
+  const handleBeforeUpload: UploadProps["beforeUpload"] = (file) => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (!isJpgOrPng) {
+      message.error('คุณสามารถอัปโหลดไฟล์ JPG/PNG เท่านั้น!');
+      return Upload.LIST_IGNORE;
+    }
+
+    const isLt10M = file.size / 1024 / 1024 < 4; // ตรวจสอบขนาดไฟล์ก่อนบีบอัด
+    if (!isLt10M) {
+      message.error('ขนาดรูปภาพต้องไม่เกิน 4MB!');
+      return Upload.LIST_IGNORE;
+    }
+
+    return false
+  }
 
   useEffect(() => {
     if (meter) {
@@ -159,7 +175,8 @@ export default function NewMeterForm({ meter }: { meter?: Meter }) {
         fileList={fileList}
         onPreview={handlePreview}
         onChange={handleChange}
-        beforeUpload={() => false}
+        beforeUpload={handleBeforeUpload}
+        accept="image/jpeg,image/png"
         openFileDialogOnClick={fileList.length < 1}
       >
         {fileList.length < 1 && (

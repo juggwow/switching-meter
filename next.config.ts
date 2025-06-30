@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   experimental: {
     serverActions: {
-      bodySizeLimit: '10mb', // กำหนดขนาด limit เป็น 5 เมกะไบต์
+      bodySizeLimit: '4mb', // กำหนดขนาด limit เป็น 5 เมกะไบต์
     },
   },
 };

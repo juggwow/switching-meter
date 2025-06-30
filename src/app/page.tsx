@@ -1,103 +1,77 @@
-import Image from "next/image";
+// src/app/page.tsx
+'use client'; // เป็น Client Component เพราะมี Interactive elements
 
-export default function Home() {
+import React from 'react';
+import { Card, Col, Row, Typography, Space } from 'antd';
+import {
+  InboxOutlined, // สำหรับ "เบิกมิเตอร์ใหม่" (กล่องพัสดุ)
+  ToolOutlined, // สำหรับ "ติดตั้ง/สับเปลี่ยนมิเตอร์" (เครื่องมือ)
+  CheckCircleOutlined, // สำหรับ "ตรวจสอบสถานะมิเตอร์" (ติ๊กถูก)
+  SettingOutlined, // สำหรับ "ตั้งค่า/อื่นๆ" (เฟือง)
+} from '@ant-design/icons';
+import Link from 'next/link';
+
+const { Title, Text } = Typography;
+
+// ข้อมูลสำหรับแต่ละ Card
+const dashboardItems = [
+  {
+    icon: <InboxOutlined />,
+    title: "เบิกมิเตอร์ใหม่",
+    description: "บันทึกข้อมูลการเบิกมิเตอร์",
+    link: "/picker", // ลิงก์ไปยังหน้า Form เบิกมิเตอร์ใหม่ของคุณ
+  },
+  {
+    icon: <ToolOutlined />,
+    title: "ติดตั้ง/สับเปลี่ยนมิเตอร์",
+    description: "บันทึกข้อมูลการติดตั้งมิเตอร์",
+    link: "/installation", // ลิงก์ไปยังหน้า Form ติดตั้ง/สับเปลี่ยน (สมมติว่าเป็น /installation/new)
+  },
+  {
+    icon: <CheckCircleOutlined />,
+    title: "ตรวจสอบสถานะมิเตอร์",
+    description: "ดูสถานะและประวัติมิเตอร์",
+    link: "/", // ลิงก์ไปยังหน้าตาราง MeterList ของคุณ
+  },
+  {
+    icon: <SettingOutlined />,
+    title: "ตั้งค่า / อื่นๆ",
+    description: "จัดการการตั้งค่าระบบ",
+    link: "/", // ลิงก์ไปยังหน้าตั้งค่า (สมมติว่าเป็น /settings)
+  },
+];
+
+export default function DashboardPage() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+    <div className="max-w-2xl mx-auto mt-10"> {/* ปรับ padding และ background color */}
+      <Row gutter={[12, 12]} justify="center" align="middle"> {/* จัดให้อยู่กึ่งกลางหน้า */}
+        {dashboardItems.map((item, index) => (
+          <Col key={index} xs={24} sm={12} > {/* Responsive columns */}
+            <Link href={item.link} passHref>
+              <Card
+                hoverable
+                style={{
+                  textAlign: 'center',
+                  padding: '8px',
+                  borderRadius: '12px',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                  transition: 'all 0.3s ease',
+                }}
+              >
+                <div style={{ fontSize: '36px', marginBottom: '8px' }}>
+                  {item.icon}
+                </div>
+                <Title level={5} style={{ marginBottom: '4px' }}>
+                  {item.title}
+                </Title>
+                <Text type="secondary">
+                  {item.description}
+                </Text>
+              </Card>
+            </Link>
+          </Col>
+        ))}
+      </Row>
     </div>
   );
 }

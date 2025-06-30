@@ -2,7 +2,7 @@
 
 import { use } from "react";
 import { useQuery } from "@tanstack/react-query";
-import MeterForm from "@/app/component/meter-form/new-form";
+import MeterForm from "@/app/component/meter-form/picker-form";
 import { getMeter } from "@/app/component/meter-form/action";
 
 export default function MeterEditPage({

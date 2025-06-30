@@ -17,7 +17,7 @@ export const ThemeContext = createContext<ThemeContextType | undefined>(undefine
 
 
 export default function AntdConfigProvider({ children }: { children: React.ReactNode }) {
-  if (window === undefined){
+  if (typeof  window === "undefined"){
     return <>
         {children}   
     </>

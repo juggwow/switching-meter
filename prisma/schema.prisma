@@ -9,19 +9,19 @@ datasource db {
 
 model Meter {
   id                   String    @id @default(auto()) @map("_id") @db.ObjectId
-  peaNoNew             String
-  pickerName           String
-  pickerDate           DateTime
+  peaNoNew             String //หมายเลข Pea No ของมิเตอร์ใหม่
+  pickerName           String //ชื่อผู้เบิก
+  pickerDate           DateTime //วันที่เบิก
   newMeterImageUrl     String // เก็บ URL หรือ path ของรูปภาพ
-  newMeterImageId      String
-  peaNoOld             String?
-  oldMeterImageUrl     String?
-  oldMeterImageId      String?
-  installationDate     DateTime?
-  installationName     String?
-  unitOld              Float?
-  unitNew              Float?
-  installationLocation String?
+  newMeterImageId      String //เก็บ ID ของรูปภาพ
+  peaNoOld             String? //หมายเลข Pea No ของมิเตอร์เก่า
+  oldMeterImageUrl     String? //เก็บ URL หรือ path ของรูปภาพ
+  oldMeterImageId      String? //เก็บ ID ของรูปภาพ
+  installationDate     DateTime? //วันที่ติดตั้ง/สัปเปลี่ยนมิเตอร์
+  installationName     String? //ชื่อผู้ติดตั้ง/สัปเปลี่ยนมิเตอร์
+  unitOld              Float? //หน่วยไฟฟ้าเก่า
+  unitNew              Float? //หน่วยไฟฟ้าใหม่
+  installationLocation String? //ตำแหน่งที่ติดตั้ง
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
 }
