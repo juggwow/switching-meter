@@ -5,6 +5,7 @@ import React from 'react';
 import { Layout, Menu, Button, Space, theme, Badge } from 'antd';
 import { BellOutlined, UserOutlined } from '@ant-design/icons'; // เพิ่ม BellOutlined, UserOutlined
 import Link from 'next/link';
+import ThemeToggle from './theme-toggle';
 
 const { Header } = Layout;
 
@@ -44,6 +45,7 @@ export default function Navbar({
       {/* User Info and Notifications */}
       <Space size="middle">
         {/* Notification Bell */}
+        <ThemeToggle/>
         <Badge count={notificationCount} offset={[0, 0]}>
           <Button
             type="text"
@@ -54,7 +56,7 @@ export default function Navbar({
         </Badge>
 
         {/* User Name */}
-        <span className="text-white text-base font-medium whitespace-nowrap hidden sm:inline">
+        <span className=" text-base font-medium whitespace-nowrap hidden sm:inline">
           {userName}
         </span>
         {/* User Avatar/Icon (optional) */}

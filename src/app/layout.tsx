@@ -9,6 +9,11 @@ import { ThemeProvider } from "@/provider/theme-provider";
 import AntdRegistry from "@/provider/antd-registry";
 import Navbar from "./component/layout/navbar";
 
+import dynamic from "next/dynamic";
+import { App } from "antd";
+
+// const Navbar = dynamic(() => import('./component/layout/navbar'), { ssr: false })
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -38,8 +43,10 @@ export default function RootLayout({
           <AntdRegistry>
             <ThemeProvider>
               <AntdConfigProvider>
-                <Navbar />
-                {children}
+                <App>
+                  <Navbar />
+                  {children}
+                </App>
               </AntdConfigProvider>
             </ThemeProvider>
           </AntdRegistry>
