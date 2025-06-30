@@ -1,3 +1,6 @@
+'use client'
+
+import "@ant-design/v5-patch-for-react-19";
 import {
   InstallationFormData,
   installationFormSchema,
@@ -239,7 +242,7 @@ export default function InstallationFormComponent({ meter }: { meter: Meter }) {
       setOldFileList([fileForList]);
 
       // แปลง URL เป็น File object เพื่อให้ validation ของ react-hook-form ผ่าน
-      urlToFile(meter.newMeterImageUrl, "existing-image.jpg").then(
+      urlToFile(meter.oldMeterImageUrl, "existing-image.jpg").then(
         (fileObject) => {
           setValue("oldMeterImage", fileObject, { shouldValidate: true });
         }
@@ -303,7 +306,7 @@ export default function InstallationFormComponent({ meter }: { meter: Meter }) {
         <Controller
           name="peaNoNew"
           control={control}
-          render={({ field }) => <Input type="number" {...field} />}
+          render={({ field }) => <Input {...field} />}
         />
       </Form.Item>
       <Upload
@@ -330,7 +333,7 @@ export default function InstallationFormComponent({ meter }: { meter: Meter }) {
         <Controller
           name="unitNew"
           control={control}
-          render={({ field }) => <Input {...field} />}
+          render={({ field }) => <Input type="number" {...field} />}
         />
       </Form.Item>
 

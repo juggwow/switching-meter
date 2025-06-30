@@ -70,14 +70,18 @@ export async function submitInstallationForm(
   }: { isRemoveNewImage: boolean; isRemoveOldImage: boolean }
 ) {
   let data = await getMeter(formData.id);
-  if (data.oldMeterImageId && isRemoveOldImage) {
-    await deleteImage(data.oldMeterImageId);
+  if (isRemoveOldImage) {
+    if(data.oldMeterImageId){
+      await deleteImage(data.oldMeterImageId);
+    }
     const oldMeterUpload = await uploadImage(formData.oldMeterImage!);
     data.oldMeterImageId = oldMeterUpload.fileId;
     data.oldMeterImageUrl = oldMeterUpload.url;
   }
-  if (data.newMeterImageId && isRemoveNewImage) {
-    await deleteImage(data.newMeterImageId);
+  if (isRemoveNewImage) {
+    if(data.newMeterImageId){
+      await deleteImage(data.newMeterImageId);
+    }
     const newMeterUpload = await uploadImage(formData.newMeterImage!);
     data.newMeterImageId = newMeterUpload.fileId;
     data.newMeterImageUrl = newMeterUpload.url;
