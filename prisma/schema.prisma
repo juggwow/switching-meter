@@ -25,3 +25,20 @@ model Meter {
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
 }
+
+enum UserRole {
+  PEA
+  OUTSOURCE
+  ADMIN // อาจจะเพิ่มบทบาท ADMIN สำหรับผู้ดูแลระบบเอง
+}
+
+// เพิ่ม model นี้
+model User {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId // MongoDB ObjectId
+  username    String   @unique // ชื่อผู้ใช้งาน ต้องไม่ซ้ำกัน
+  displayname String
+  password    String // รหัสผ่าน (จะถูกเก็บแบบ Hash)
+  role        UserRole // บทบาทของผู้ใช้งาน
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

@@ -2,8 +2,8 @@
 
 import { use } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getMeter } from "@/app/component/meter-form/action";
-import InstallationForm from "@/app/component/meter-form/installation-form";
+import { getMeter } from "@/component/meter-form/action";
+import InstallationForm from "@/component/meter-form/installation-form";
 
 export default function MeterEditPage({
   params,

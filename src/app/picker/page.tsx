@@ -1,6 +1,6 @@
 'use client'
 
-import MeterForm from "@/app/component/meter-form/picker-form";
+import MeterForm from "@/component/meter-form/picker-form";
 
 export default function WarehousePage() {
   return (

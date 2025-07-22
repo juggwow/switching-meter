@@ -27,6 +27,8 @@ import { Meter } from "@prisma/client";
 import { submitInstallationForm } from "./action";
 
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 // Dynamic import เพื่อไม่ให้แผนที่ถูกเรนเดอร์ฝั่ง Server (ป้องกัน error)
 const LocationMap = dynamic(() => import("../map/location-map"), {
@@ -45,6 +47,7 @@ const urlToFile = async (
 };
 
 export default function InstallationFormComponent({ meter }: { meter: Meter }) {
+  const router = useRouter()
   const {
     handleSubmit,
     resetField,
@@ -65,6 +68,7 @@ export default function InstallationFormComponent({ meter }: { meter: Meter }) {
         // เราสามารถ await เพื่อรอให้มันทำงานเสร็จ
         // และเพื่อให้แน่ใจว่าผู้ใช้เห็นข้อความก่อนที่จะเกิดการ redirect
         await message.success("บันทึกข้อมูลเรียบร้อยแล้ว!");
+        router.push(`/installation`);
       } catch (error) {
         // ในกรณีที่ message.success มีปัญหา (เช่น context หาย)
         // เราจะจับ error ไว้เพื่อไม่ให้แอปพัง และแสดง log ใน console
@@ -82,6 +86,9 @@ export default function InstallationFormComponent({ meter }: { meter: Meter }) {
     isRemoveOldImage: false,
   });
   const [isGpsLoading, setIsGpsLoading] = useState(false);
+
+  const {data:session} = useSession()
+  
   const initialMapPosition = () => {
     if (meter.installationLocation) {
       const [lat, lon] = meter.installationLocation
@@ -249,6 +256,10 @@ export default function InstallationFormComponent({ meter }: { meter: Meter }) {
       );
     }
   }, [meter]);
+
+  useEffect(() => {
+    setValue("installationName", session?.user.displayname)
+  },[session])
 
   return (
     <Form

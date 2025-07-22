@@ -22,6 +22,7 @@ import { MeterFormData, meterFormSchema } from "@/shema/meter-form";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { Meter } from "@prisma/client";
+import { useSession } from "next-auth/react";
 
 // Helper function to convert image URL to a File object
 const urlToFile = async (
@@ -51,6 +52,8 @@ export default function PickerMeterFormComponent({ meter }: { meter?: Meter }) {
   const [previewImage, setPreviewImage] = useState("");
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [isRemoveImage, setIsRemoveImage] = useState(false);
+
+  const {data: session} = useSession()
 
   const handlePreview = async (file: UploadFile) => {
     if (!file.url && !file.preview) {
@@ -150,6 +153,10 @@ export default function PickerMeterFormComponent({ meter }: { meter?: Meter }) {
       setValue("issueDate", new Date());
     }
   }, [meter]);
+
+  useEffect(() => {
+    setValue("issuerName", session?.user.displayname)
+  },[session])
 
   return (
     <Form

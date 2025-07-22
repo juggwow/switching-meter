@@ -7,10 +7,11 @@ import AntdConfigProvider, {
 } from "@/provider/antd-config-provider";
 import { ThemeProvider } from "@/provider/theme-provider";
 import AntdRegistry from "@/provider/antd-registry";
-import Navbar from "./component/layout/navbar";
+import Navbar from "../component/layout/navbar";
 
 import dynamic from "next/dynamic";
 import { App } from "antd";
+import SessionProvider from "@/provider/session";
 
 // const Navbar = dynamic(() => import('./component/layout/navbar'), { ssr: false })
 
@@ -39,10 +40,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <SessionProvider>
         <QueryClientProvider>
           <Navbar />
           {children}
         </QueryClientProvider>
+        </SessionProvider>
       </body>
     </html>
   );
