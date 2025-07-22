@@ -105,18 +105,12 @@ export async function fetchMeters({
         pickerDate: filter?.sortOrder || 'desc',
     };
 
-
-    console.log("Final where clause:", JSON.stringify(where));
-    console.log("Order by clause:", JSON.stringify(orderBy));
-
     const meters = await prisma.meter.findMany({
       skip: skip,
       take: pageSize,
       orderBy: orderBy,
       where: where,
     });
-
-    console.log("Meters fetched count:", meters.length);
 
     const totalCount = await prisma.meter.count({
         where: where,

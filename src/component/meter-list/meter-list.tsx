@@ -12,6 +12,7 @@ import {
   Row,
   Image,
   message,
+  theme,
 } from "antd"; // เพิ่ม Image component
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
@@ -62,6 +63,8 @@ export default function MeterListComponent({
     sortOrder: "desc",
   });
 
+  const { token } = theme.useToken(); // ดึง theme token
+
   const { data, isLoading, isError, error, isRefetching } = useQuery<
     FetchMetersResult,
     Error
@@ -96,17 +99,36 @@ export default function MeterListComponent({
   }
 
   const metersData =
-    data?.meters.map((meter) => ({
-      ...meter,
-      key: meter.id,
-      pickerDate: new Date(meter.pickerDate),
-      installationDate: meter.installationDate
-        ? new Date(meter.installationDate)
-        : null,
-      createdAt: new Date(meter.createdAt),
-      updatedAt: new Date(meter.updatedAt),
-    })) || [];
+    data?.meters.map((meter) => {
+      let status = "wait_installation";
+      let color = "#000000";
 
+      switch (status) {
+        case "wait_installation":
+          color = "#b4fcb4";
+          break;
+        case "is_installed":
+          color = "#b4fcb4";
+          break;
+        case "picker_overdue":
+          color = "#fcb4b4";
+          break;
+      }
+      return {
+        ...meter,
+        key: meter.id,
+        pickerDate: new Date(meter.pickerDate),
+        installationDate: meter.installationDate
+          ? new Date(meter.installationDate)
+          : null,
+        createdAt: new Date(meter.createdAt),
+        updatedAt: new Date(meter.updatedAt),
+        status,
+        color,
+      };
+    }) || [];
+
+  console.log(metersData);
   const handlePageChange = (page: number, newPageSize?: number) => {
     setCurrentPage(page);
     if (newPageSize && newPageSize !== pageSize) {
@@ -141,6 +163,8 @@ export default function MeterListComponent({
                 hoverable
                 className="meter-list-card" // เพิ่ม className สำหรับ custom style
                 style={{
+                  borderLeft:
+                    mode == "statuslist" ? `4px solid ${meter.color}`:undefined, // 4px solid สีฟ้าหลักของ Ant Design
                   borderRadius: "8px",
                   width: "100%", // ทำให้ Card เต็มความกว้างของ parent (Column เดียว)
                 }}
@@ -257,9 +281,18 @@ export default function MeterListComponent({
                     justifyContent: "flex-end",
                   }}
                 >
-                  <Link key="edit" href={`/installation/${meter.id}`}>
-                    <Button type="link">สับเปลี่ยน/ติดตั้ง</Button>
+                  <Link href={`/installation/${meter.id}`}>
+                    <Button type="link">
+                      {meter.peaNoOld
+                        ? "แก้ไขข้อมูลสับเปลี่ยน"
+                        : "สับเปลี่ยน/ติดตั้ง"}
+                    </Button>
                   </Link>
+                  {!meter.peaNoOld && mode == "statuslist" && (
+                    <Link href={`/picker/${meter.id}`}>
+                      <Button type="link">แก้ไขข้อมูลการเบิก</Button>
+                    </Link>
+                  )}
                 </div>
               </Card>
             ))

@@ -7,7 +7,7 @@ import { hash } from 'bcryptjs'; // สำหรับ Hash รหัสผ่�
 import { z } from 'zod'; // สำหรับ Input Validation
 
 const prisma = new PrismaClient();
-const DEFAULT_PASSWORD = '1-8'; // รหัสผ่านเริ่มต้นสำหรับผู้ใช้งานใหม่
+const DEFAULT_PASSWORD = process.env.DEFAULT_PASSWORD || "12345678"; // รหัสผ่านเริ่มต้นสำหรับผู้ใช้งานใหม่
 
 // Interface สำหรับพารามิเตอร์การดึงผู้ใช้งาน (สำหรับ Pagination/Filter)
 interface FetchUsersParams {

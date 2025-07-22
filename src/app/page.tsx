@@ -31,7 +31,7 @@ const dashboardItems = [
     icon: <CheckCircleOutlined />,
     title: "ตรวจสอบสถานะมิเตอร์",
     description: "ดูสถานะและประวัติมิเตอร์",
-    link: "/", // ลิงก์ไปยังหน้าตาราง MeterList ของคุณ
+    link: "/list", // ลิงก์ไปยังหน้าตาราง MeterList ของคุณ
   },
   {
     icon: <SettingOutlined />,
