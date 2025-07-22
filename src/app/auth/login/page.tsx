@@ -6,11 +6,12 @@ import { Form, Input, Button, Card, Typography, App, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { signIn } from 'next-auth/react'; // นำเข้า signIn function
 import { useRouter, useSearchParams } from 'next/navigation'; // สำหรับ Router และ Query Params
+import { Suspense } from 'react'
 import Link from 'next/link';
 
 const { Title, Text } = Typography;
 
-export default function LoginPage() {
+function LoginPage(){
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
@@ -110,4 +111,13 @@ export default function LoginPage() {
       </Card>
     </div>
   );
+}
+
+export default function SuspenseLoginPage() {
+  return (
+    // You could have a loading skeleton as the `fallback` too
+    <Suspense>
+      <LoginPage />
+    </Suspense>
+  )
 }
