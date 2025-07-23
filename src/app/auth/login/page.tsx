@@ -1,10 +1,10 @@
 // src/app/auth/login/page.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, Card, Typography, App, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { signIn } from 'next-auth/react'; // นำเข้า signIn function
+import { signIn, useSession } from 'next-auth/react'; // นำเข้า signIn function
 import { useRouter, useSearchParams } from 'next/navigation'; // สำหรับ Router และ Query Params
 import { Suspense } from 'react'
 import Link from 'next/link';
@@ -14,6 +14,7 @@ const { Title, Text } = Typography;
 function LoginPage(){
   const router = useRouter();
   const searchParams = useSearchParams();
+  const {data:session} = useSession()
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -48,6 +49,10 @@ function LoginPage(){
       setLoading(false);
     }
   };
+
+  useEffect(()=>{
+    if(session) router.push('/')  
+  })
 
   return (
     <div style={{
