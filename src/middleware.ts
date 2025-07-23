@@ -4,6 +4,11 @@ import { UserRole } from "@prisma/client";
 
 // This function can be marked `async` if using `await` inside
 export default auth((req) => {
+  // console.log("===============start=============")
+  // console.log(req.nextUrl)
+  // console.log(req.auth)
+  // console.log("===============end=============")
+
   const isAuthenticated = !!req.auth;
   const isLoginPage = req.nextUrl.pathname === "/auth/login";
   const isAdminPath = req.nextUrl.pathname.startsWith("/admin"); // <--- แก้ไขตรงนี้ให้แม่นยำขึ้น
@@ -33,5 +38,13 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|auth/login|auth/register).*)"],
+  matcher: [
+    "/picker",
+    "/picker/:path",
+    "/list",
+    "/installation/:path",
+    "/installlation/:path",
+    "/admin/:path",
+    "/api/:path",
+  ],
 };
