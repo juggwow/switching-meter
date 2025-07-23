@@ -57,6 +57,7 @@ export default function FilterOptionComponent({
   const [peaNoOld, setPeaNoOld] = useState(
     initialFilters?.searchPeaNoOld || undefined
   );
+  const [ca, setCa] = useState(initialFilters?.searchCa || undefined);
   const [dateRange, setDateRange] = useState<[Dayjs | null, Dayjs | null]>([
     dayjs(initialFilters?.pickerDateStart),
     dayjs(initialFilters?.pickerDateEnd),
@@ -71,6 +72,7 @@ export default function FilterOptionComponent({
   // ใช้ useEffect เพื่อ Sync State ภายในกับ initialFilters จาก Parent
   // เมื่อ initialFilters เปลี่ยน (เช่น กด Reset จาก Parent)
   useEffect(() => {
+    setCa(initialFilters?.searchCa);
     setPeaNoNew(initialFilters?.searchPeaNoNew);
     setPeaNoOld(initialFilters?.searchPeaNoOld);
     let startDate = dayjs().add(-7, "day");
@@ -94,6 +96,7 @@ export default function FilterOptionComponent({
     onApplyFilters({
       searchPeaNoNew: peaNoNew || undefined,
       searchPeaNoOld: peaNoOld || undefined,
+      searchCa: ca || undefined,
       // *** แปลง Dayjs เป็น Date ที่นี่ก่อนส่งไปยัง Parent ***
       pickerDateStart: dateRange[0] ? dateRange[0].toDate() : undefined,
       pickerDateEnd: dateRange[1] ? dateRange[1].toDate() : undefined,
@@ -106,6 +109,7 @@ export default function FilterOptionComponent({
   const handleReset = () => {
     setPeaNoNew("");
     setPeaNoOld("");
+    setCa("");
     setDateRange([null, null]); // รีเซ็ตช่วงวันที่
     setSortOrder("desc"); // รีเซ็ตลำดับการจัดเรียงเป็นค่าเริ่มต้น
     onResetFilters(); // เรียก Callback เพื่อให้ Parent รีเซ็ต State ด้วย
@@ -117,6 +121,18 @@ export default function FilterOptionComponent({
       {/* เพิ่ม dark mode classes */}
       <Space direction="vertical" size="middle" style={{ width: "100%" }}>
         <Row gutter={[16, 16]} align="bottom">
+          {/* ช่องค้นหา ca */}
+          <Col xs={24} sm={12} md={8} lg={6}>
+            <Text strong className="dark:text-white">
+              ca ผชฟ.
+            </Text>
+            <Input
+              placeholder="ค้นหา ca ผชฟ."
+              prefix={<SearchOutlined />}
+              value={ca}
+              onChange={(e) => setCa(e.target.value)}
+            />
+          </Col>
           {/* ช่องค้นหา PEA No. ใหม่ */}
           <Col xs={24} sm={12} md={8} lg={6}>
             <Text strong className="dark:text-white">

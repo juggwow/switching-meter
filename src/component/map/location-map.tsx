@@ -44,16 +44,16 @@ function MapRecenter({ lat, lng }: { lat: number; lng: number }) {
 }
 
 // Component สำหรับจัดการ Map Click Event
-function MapClickHandler({ onMapClick }: { onMapClick?: (lat: number, lng: number) => void }) {
-  useMapEvents({
-    click: (e) => {
-      if (onMapClick) {
-        onMapClick(e.latlng.lat, e.latlng.lng);
-      }
-    },
-  });
-  return null;
-}
+// function MapClickHandler({ onMapClick }: { onMapClick?: (lat: number, lng: number) => void }) {
+//   useMapEvents({
+//     click: (e) => {
+//       if (onMapClick) {
+//         onMapClick(e.latlng.lat, e.latlng.lng);
+//       }
+//     },
+//   });
+//   return null;
+// }
 
 
 export default function LocationMap({ latitude, longitude, onMapClick }: LocationMapProps) {
@@ -80,7 +80,7 @@ export default function LocationMap({ latitude, longitude, onMapClick }: Locatio
       )}
 
       {/* เพิ่ม MapClickHandler เข้าไปใน MapContainer */}
-      <MapClickHandler onMapClick={onMapClick} />
+      {/* <MapClickHandler onMapClick={onMapClick} /> */}
       
       {/* Recenter map when position changes */}
       {latitude && longitude && <MapRecenter lat={latitude} lng={longitude} />}

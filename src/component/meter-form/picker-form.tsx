@@ -130,6 +130,7 @@ export default function PickerMeterFormComponent({ meter }: { meter?: Meter }) {
       setValue("peaNoNew", meter.peaNoNew);
       setValue("issuerName", meter.pickerName);
       setValue("issueDate", meter.pickerDate);
+      setValue('ca',meter.ca)
 
       // ถ้ามีรูปภาพเดิม, ให้แสดงใน Upload component
       if (meter.newMeterImageUrl) {
@@ -165,6 +166,17 @@ export default function PickerMeterFormComponent({ meter }: { meter?: Meter }) {
       className="max-w-xl mx-auto mt-10 rounded shadow-md"
       style={{ padding: "24px" }}
     >
+      <Form.Item
+        label="ca ผชฟ."
+        validateStatus={errors.ca ? "error" : ""}
+        help={errors.ca?.message}
+      >
+        <Controller
+          name="ca"
+          control={control}
+          render={({ field }) => <Input {...field} />}
+        />
+      </Form.Item>
       <Form.Item
         label="PEA No. มิเตอร์ใหม่"
         validateStatus={errors.peaNoNew ? "error" : ""}
@@ -216,7 +228,7 @@ export default function PickerMeterFormComponent({ meter }: { meter?: Meter }) {
         <Controller
           name="issuerName"
           control={control}
-          render={({ field }) => <Input {...field} />}
+          render={({ field }) => <Input disabled {...field} />}
         />
       </Form.Item>
       <Form.Item label="วันที่-เวลาเบิก">

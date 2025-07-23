@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import "@ant-design/v5-patch-for-react-19";
 import {
@@ -47,7 +47,7 @@ const urlToFile = async (
 };
 
 export default function InstallationFormComponent({ meter }: { meter: Meter }) {
-  const router = useRouter()
+  const router = useRouter();
   const {
     handleSubmit,
     resetField,
@@ -87,8 +87,8 @@ export default function InstallationFormComponent({ meter }: { meter: Meter }) {
   });
   const [isGpsLoading, setIsGpsLoading] = useState(false);
 
-  const {data:session} = useSession()
-  
+  const { data: session } = useSession();
+
   const initialMapPosition = () => {
     if (meter.installationLocation) {
       const [lat, lon] = meter.installationLocation
@@ -209,6 +209,7 @@ export default function InstallationFormComponent({ meter }: { meter: Meter }) {
     // --- โหมดแก้ไข ---
     setValue("peaNoNew", meter.peaNoNew);
     setValue("id", meter.id);
+    setValue("ca",meter.ca)
 
     meter.peaNoOld && setValue("peaNoOld", meter.peaNoOld);
     meter.installationDate
@@ -258,8 +259,8 @@ export default function InstallationFormComponent({ meter }: { meter: Meter }) {
   }, [meter]);
 
   useEffect(() => {
-    setValue("installationName", session?.user.displayname)
-  },[session])
+    setValue("installationName", session?.user.displayname);
+  }, [session]);
 
   return (
     <Form
@@ -350,6 +351,18 @@ export default function InstallationFormComponent({ meter }: { meter: Meter }) {
 
       <p>ข้อมูลการติดตั้ง</p>
       <Form.Item
+        label={<span className="mt-3">ca ผชฟ.</span>}
+        validateStatus={errors.ca ? "error" : ""}
+        help={errors.ca?.message}
+        className="mt-3"
+      >
+        <Controller
+          name="ca"
+          control={control}
+          render={({ field }) => <Input {...field} />}
+        />
+      </Form.Item>
+      <Form.Item
         label={<span className="mt-3">ตำแหน่งที่ติดตั้ง</span>}
         validateStatus={errors.installationLocation ? "error" : ""}
         help={errors.installationLocation?.message}
@@ -360,7 +373,7 @@ export default function InstallationFormComponent({ meter }: { meter: Meter }) {
           control={control}
           render={({ field }) => (
             <Space.Compact className="w-full">
-              <Input style={{ width: "calc(100% - 100px)" }} {...field} />
+              <Input disabled style={{ width: "calc(100% - 100px)" }} {...field} />
               <Button
                 type="default"
                 onClick={handleGetGps}
@@ -377,8 +390,8 @@ export default function InstallationFormComponent({ meter }: { meter: Meter }) {
         >
           <LocationMap
             onMapClick={handleMapClick}
-            latitude={mapPosition ? mapPosition[0]:undefined}
-            longitude={mapPosition ? mapPosition[1]:undefined}
+            latitude={mapPosition ? mapPosition[0] : undefined}
+            longitude={mapPosition ? mapPosition[1] : undefined}
           />
         </div>
       </Form.Item>
@@ -391,7 +404,7 @@ export default function InstallationFormComponent({ meter }: { meter: Meter }) {
         <Controller
           name="installationName"
           control={control}
-          render={({ field }) => <Input {...field} />}
+          render={({ field }) => <Input disabled {...field} />}
         />
       </Form.Item>
       <Form.Item label="วันที่-เวลาติดตั้ง">

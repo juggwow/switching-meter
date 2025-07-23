@@ -10,6 +10,7 @@ datasource db {
 model Meter {
   id                   String    @id @default(auto()) @map("_id") @db.ObjectId
   peaNoNew             String //หมายเลข Pea No ของมิเตอร์ใหม่
+  ca                   String  @default("2000000000")
   pickerName           String //ชื่อผู้เบิก
   pickerDate           DateTime //วันที่เบิก
   newMeterImageUrl     String // เก็บ URL หรือ path ของรูปภาพ

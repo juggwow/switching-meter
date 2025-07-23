@@ -13,6 +13,7 @@ import {
   Image,
   message,
   theme,
+  Badge,
 } from "antd"; // เพิ่ม Image component
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
@@ -100,18 +101,33 @@ export default function MeterListComponent({
 
   const metersData =
     data?.meters.map((meter) => {
-      let status = "wait_installation";
+      let status = "รอติดตั้ง";
       let color = "#000000";
+      const pickerDate = dayjs(meter.pickerDate);
+      const today = dayjs(); // วันที่และเวลาปัจจุบัน
 
+      // สร้างจุดเปรียบเทียบ: วันที่ 2 วันที่แล้วจากปัจจุบัน
+      const yesterday = today.subtract(1, "day").startOf("day"); // ไปที่ 00:00:00 ของ 2 วันที่แล้ว
+
+      if (
+        !meter.peaNoOld &&
+        (pickerDate.isBefore(yesterday) || pickerDate.isSame(yesterday, "day"))
+      ) {
+        status = "เบิกเกินกำหนด";
+      } else if (meter.peaNoOld) {
+        status = "ติดตั้งแล้ว";
+      } else {
+        status = "รอติดตั้ง";
+      }
       switch (status) {
-        case "wait_installation":
-          color = "#b4fcb4";
+        case "รอติดตั้ง":
+          color = "#fd9b16";
           break;
-        case "is_installed":
-          color = "#b4fcb4";
+        case "ติดตั้งแล้ว":
+          color = "#16fd2b";
           break;
-        case "picker_overdue":
-          color = "#fcb4b4";
+        case "เบิกเกินกำหนด":
+          color = "#fd2e16";
           break;
       }
       return {
@@ -158,143 +174,157 @@ export default function MeterListComponent({
           {/* ใช้ Space direction="vertical" เพื่อเรียง Card ลงมา */}
           {metersData.length > 0 ? (
             metersData.map((meter) => (
-              <Card
-                key={meter.id}
-                hoverable
-                className="meter-list-card" // เพิ่ม className สำหรับ custom style
-                style={{
-                  borderLeft:
-                    mode == "statuslist" ? `4px solid ${meter.color}`:undefined, // 4px solid สีฟ้าหลักของ Ant Design
-                  borderRadius: "8px",
-                  width: "100%", // ทำให้ Card เต็มความกว้างของ parent (Column เดียว)
-                }}
-              >
-                <Row wrap={false} align="middle">
-                  {" "}
-                  {/* ใช้ Row wrap={false} เพื่อให้รูปและข้อมูลอยู่คนละคอลัมน์และไม่ขึ้นบรรทัดใหม่ */}
-                  <Col flex="100px" className="card-image-col">
+              <Badge.Ribbon text={meter.status} color={meter.color}>
+                <Card
+                  key={meter.id}
+                  hoverable
+                  className="meter-list-card" // เพิ่ม className สำหรับ custom style
+                  style={{
+                    borderLeft:
+                      mode == "statuslist"
+                        ? `4px solid ${meter.color}`
+                        : undefined, // 4px solid สีฟ้าหลักของ Ant Design
+                    borderRadius: "8px",
+                    width: "100%", // ทำให้ Card เต็มความกว้างของ parent (Column เดียว)
+                  }}
+                >
+                  <Row wrap={false} align="middle">
                     {" "}
-                    {/* กำหนดความกว้างของคอลัมน์รูปภาพ */}
-                    {meter.newMeterImageUrl ? (
-                      <Image
-                        alt="มิเตอร์ใหม่"
-                        src={meter.newMeterImageUrl}
-                        style={{
-                          width: "100%",
-                          height: "100px", // กำหนดความสูงของรูปภาพ
-                          objectFit: "cover",
-                        }}
-                      />
-                    ) : (
-                      <div
-                        style={{
-                          width: "100%",
-                          height: "200px",
-                          backgroundColor: "#f0f2f5",
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          borderTopLeftRadius: "8px",
-                          borderBottomLeftRadius: "8px",
-                        }}
-                      >
-                        ไม่มีรูปมิเตอร์ใหม่
-                      </div>
-                    )}
-                  </Col>
-                  <Col flex="auto" style={{ padding: "16px" }}>
-                    {" "}
-                    {/* คอลัมน์ข้อมูล ใช้ flex="auto" เพื่อให้ขยายเต็มที่เหลือ */}
-                    <Card.Meta
-                      title={
-                        <Space direction="vertical" size={4} className="w-full">
-                          <Text strong>
-                            <TagOutlined /> PEA ใหม่: {meter.peaNoNew}
-                          </Text>
-                          {mode == "statuslist" && (
-                            <Text type="secondary">
-                              <TagOutlined /> PEA เก่า: {meter.peaNoOld || "-"}
-                            </Text>
-                          )}
-                        </Space>
-                      }
-                      description={
-                        <Space
-                          direction="vertical"
-                          size={4}
-                          className="w-full text-left"
+                    {/* ใช้ Row wrap={false} เพื่อให้รูปและข้อมูลอยู่คนละคอลัมน์และไม่ขึ้นบรรทัดใหม่ */}
+                    <Col flex="100px" className="card-image-col">
+                      {" "}
+                      {/* กำหนดความกว้างของคอลัมน์รูปภาพ */}
+                      {meter.newMeterImageUrl ? (
+                        <Image
+                          alt="มิเตอร์ใหม่"
+                          src={meter.newMeterImageUrl}
+                          style={{
+                            width: "100%",
+                            height: "100px", // กำหนดความสูงของรูปภาพ
+                            objectFit: "cover",
+                          }}
+                        />
+                      ) : (
+                        <div
+                          style={{
+                            width: "100%",
+                            height: "200px",
+                            backgroundColor: "#f0f2f5",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            borderTopLeftRadius: "8px",
+                            borderBottomLeftRadius: "8px",
+                          }}
                         >
-                          <Text>
-                            <UserOutlined /> ผู้เบิก: {meter.pickerName}
-                          </Text>
-                          <Text>
-                            <CalendarOutlined /> เบิกเมื่อ:{" "}
-                            {dayjs(meter.pickerDate).format("DD/MM/YYYY HH:mm")}
-                          </Text>
-                          {mode == "statuslist" && (
-                            <Text>
-                              <DollarOutlined /> หน่วยเก่า:{" "}
-                              {meter.unitOld !== null
-                                ? meter.unitOld.toFixed(2)
-                                : "-"}
+                          ไม่มีรูปมิเตอร์ใหม่
+                        </div>
+                      )}
+                    </Col>
+                    <Col flex="auto" style={{ padding: "16px" }}>
+                      {" "}
+                      {/* คอลัมน์ข้อมูล ใช้ flex="auto" เพื่อให้ขยายเต็มที่เหลือ */}
+                      <Card.Meta
+                        title={
+                          <Space
+                            direction="vertical"
+                            size={4}
+                            className="w-full"
+                          >
+                            <Text strong>
+                              <UserOutlined /> ca ผชฟ. {meter.ca}
                             </Text>
-                          )}
-                          {mode == "statuslist" && (
-                            <Text>
-                              <DollarOutlined /> หน่วยใหม่:{" "}
-                              {meter.unitNew !== null
-                                ? meter.unitNew.toFixed(2)
-                                : "-"}
+                            <Text strong>
+                              <TagOutlined /> PEA ใหม่: {meter.peaNoNew}
                             </Text>
-                          )}
-                          {mode == "statuslist" && meter.installationName && (
+                            {mode == "statuslist" && (
+                              <Text type="secondary">
+                                <TagOutlined /> PEA เก่า:{" "}
+                                {meter.peaNoOld || "-"}
+                              </Text>
+                            )}
+                          </Space>
+                        }
+                        description={
+                          <Space
+                            direction="vertical"
+                            size={4}
+                            className="w-full text-left"
+                          >
                             <Text>
-                              <UserOutlined /> ผู้ติดตั้ง:{" "}
-                              {meter.installationName}
+                              <UserOutlined /> ผู้เบิก: {meter.pickerName}
                             </Text>
-                          )}
-                          {mode == "statuslist" && meter.installationDate && (
                             <Text>
-                              <CalendarOutlined /> ติดตั้งเมื่อ:{" "}
-                              {dayjs(meter.installationDate).format(
+                              <CalendarOutlined /> เบิกเมื่อ:{" "}
+                              {dayjs(meter.pickerDate).format(
                                 "DD/MM/YYYY HH:mm"
                               )}
                             </Text>
-                          )}
-                          {mode == "statuslist" &&
-                            meter.installationLocation && (
+                            {mode == "statuslist" && (
                               <Text>
-                                <EnvironmentOutlined /> ตำแหน่ง:{" "}
-                                {meter.installationLocation}
+                                <DollarOutlined /> หน่วยเก่า:{" "}
+                                {meter.unitOld !== null
+                                  ? meter.unitOld.toFixed(2)
+                                  : "-"}
                               </Text>
                             )}
-                        </Space>
-                      }
-                    />
-                  </Col>
-                </Row>
-                <div
-                  style={{
-                    padding: "8px 16px",
-                    borderTop: "1px solid #f0f0f0",
-                    display: "flex",
-                    justifyContent: "flex-end",
-                  }}
-                >
-                  <Link href={`/installation/${meter.id}`}>
-                    <Button type="link">
-                      {meter.peaNoOld
-                        ? "แก้ไขข้อมูลสับเปลี่ยน"
-                        : "สับเปลี่ยน/ติดตั้ง"}
-                    </Button>
-                  </Link>
-                  {!meter.peaNoOld && mode == "statuslist" && (
-                    <Link href={`/picker/${meter.id}`}>
-                      <Button type="link">แก้ไขข้อมูลการเบิก</Button>
+                            {mode == "statuslist" && (
+                              <Text>
+                                <DollarOutlined /> หน่วยใหม่:{" "}
+                                {meter.unitNew !== null
+                                  ? meter.unitNew.toFixed(2)
+                                  : "-"}
+                              </Text>
+                            )}
+                            {mode == "statuslist" && meter.installationName && (
+                              <Text>
+                                <UserOutlined /> ผู้ติดตั้ง:{" "}
+                                {meter.installationName}
+                              </Text>
+                            )}
+                            {mode == "statuslist" && meter.installationDate && (
+                              <Text>
+                                <CalendarOutlined /> ติดตั้งเมื่อ:{" "}
+                                {dayjs(meter.installationDate).format(
+                                  "DD/MM/YYYY HH:mm"
+                                )}
+                              </Text>
+                            )}
+                            {mode == "statuslist" &&
+                              meter.installationLocation && (
+                                <Text>
+                                  <EnvironmentOutlined /> ตำแหน่ง:{" "}
+                                  {meter.installationLocation}
+                                </Text>
+                              )}
+                          </Space>
+                        }
+                      />
+                    </Col>
+                  </Row>
+                  <div
+                    style={{
+                      padding: "8px 16px",
+                      borderTop: "1px solid #f0f0f0",
+                      display: "flex",
+                      justifyContent: "flex-end",
+                    }}
+                  >
+                    <Link href={`/installation/${meter.id}`}>
+                      <Button type="link">
+                        {meter.peaNoOld
+                          ? "แก้ไขข้อมูลสับเปลี่ยน"
+                          : "สับเปลี่ยน/ติดตั้ง"}
+                      </Button>
                     </Link>
-                  )}
-                </div>
-              </Card>
+                    {!meter.peaNoOld && mode == "statuslist" && (
+                      <Link href={`/picker/${meter.id}`}>
+                        <Button type="link">แก้ไขข้อมูลการเบิก</Button>
+                      </Link>
+                    )}
+                  </div>
+                </Card>
+              </Badge.Ribbon>
             ))
           ) : (
             <div className="text-center text-lg text-gray-500 w-full mt-8">
