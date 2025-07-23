@@ -18,9 +18,11 @@ import {
   ReloadOutlined,
   SortAscendingOutlined,
   SortDescendingOutlined,
+  DownloadOutlined,
 } from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs"; // Dayjs สำหรับจัดการวันที่
 import { FilterData } from "@/app/type/filter";
+import { exportMetersToCsv } from "../meter-list/action";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -68,6 +70,43 @@ export default function FilterOptionComponent({
   const [status, setStatus] = useState<
     "wait_installation" | "is_installed" | "picker_overdue" | "all" | undefined
   >();
+
+  const handleDownloadCsv = async () => {
+    try {
+      // ดึง Filter ปัจจุบันที่ถูก Apply
+      const filter: FilterData = {
+        searchPeaNoNew: peaNoNew || undefined,
+        searchPeaNoOld: peaNoOld || undefined,
+        searchCa: ca || undefined,
+        // *** แปลง Dayjs เป็น Date ที่นี่ก่อนส่งไปยัง Parent ***
+        pickerDateStart: dateRange[0] ? dateRange[0].toDate() : undefined,
+        pickerDateEnd: dateRange[1] ? dateRange[1].toDate() : undefined,
+        sortOrder: sortOrder,
+        status: status,
+      };
+
+      // เรียก Server Action เพื่อรับ CSV String
+      const csvString = await exportMetersToCsv(filter);
+
+      // สร้าง Blob จาก CSV String
+      const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+
+      // สร้าง URL สำหรับ Download
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `meters_data_${dayjs().format("YYYYMMDD_HHmmss")}.csv`
+      ); // ตั้งชื่อไฟล์
+      document.body.appendChild(link); // ต้องเพิ่ม link เข้า DOM ก่อน
+      link.click(); // Trigger การ Download
+      document.body.removeChild(link); // ลบ link ออกจาก DOM
+      URL.revokeObjectURL(url); // ปล่อยทรัพยากร URL
+    } catch (error: any) {
+      console.error("Error downloading CSV:", error);
+    }
+  };
 
   // ใช้ useEffect เพื่อ Sync State ภายในกับ initialFilters จาก Parent
   // เมื่อ initialFilters เปลี่ยน (เช่น กด Reset จาก Parent)
@@ -218,6 +257,16 @@ export default function FilterOptionComponent({
             marginTop: "16px",
           }}
         >
+          {mode == "statuslist" && (
+            <Button
+              loading={isPending}
+              type="primary"
+              onClick={handleDownloadCsv}
+              icon={<DownloadOutlined />}
+            >
+              Export
+            </Button>
+          )}
           <Button onClick={handleReset} icon={<ReloadOutlined />}>
             รีเซ็ต
           </Button>
