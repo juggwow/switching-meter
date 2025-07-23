@@ -102,7 +102,6 @@ export async function exportMetersToCsv(filter: FilterData): Promise<string> {
       { key: 'PEA No. เก่า', header: 'PEA No. เก่า' },
       { key: 'ชื่อผู้เบิก', header: 'ชื่อผู้เบิก' },
       { key: 'วันที่เบิก', header: 'วันที่เบิก' },
-      { key: 'สถานะ', header: 'สถานะ' },
       { key: 'หน่วยเก่า', header: 'หน่วยเก่า' },
       { key: 'หน่วยใหม่', header: 'หน่วยใหม่' },
       { key: 'ชื่อผู้ติดตั้ง', header: 'ชื่อผู้ติดตั้ง' },
