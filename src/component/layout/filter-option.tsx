@@ -23,7 +23,9 @@ import {
 import dayjs, { Dayjs } from "dayjs"; // Dayjs สำหรับจัดการวันที่
 import { FilterData } from "@/app/type/filter";
 import { exportMetersToCsv } from "../meter-list/action";
-import { exportIsInstalledAndNoDataFromGIS } from "../meter-form/action";
+import { exportIsInstalledAndNoDataFromGIS, updateFromGis } from "../meter-form/action";
+import { Meter } from "@prisma/client";
+import { getDataFromGIS } from "@/lib/gis";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -73,8 +75,7 @@ export default function FilterOptionComponent({
   const [status, setStatus] = useState<
     "wait_installation" | "is_installed" | "picker_overdue" | "all" | undefined
   >();
-  const [isSyncPending,setIsSyncPending] = useState(false)
-
+  const [isSyncPending, setIsSyncPending] = useState(false);
 
   const handleDownloadCsv = async () => {
     try {
@@ -150,15 +151,33 @@ export default function FilterOptionComponent({
   };
 
   const handleSyncGis = async () => {
-    setIsSyncPending(true)
+    setIsSyncPending(true);
+    let datas:Meter[] = []
     try {
-      const res = await exportIsInstalledAndNoDataFromGIS()
-      console.log(res)
+      const res = await exportIsInstalledAndNoDataFromGIS();
+      datas = res
     } catch (error) {
-      console.log(error)
+      console.log(error);
+      setIsSyncPending(false);
+      return;
     }
+
+    for (const d of datas) {
+      if(!d.peaNoOld) continue
+      try {
+        const fromGis = await getDataFromGIS(d.peaNoOld)
+        if(fromGis.features.length == 0) {
+          continue;
+        }
+
+        await updateFromGis(fromGis.features[0].attributes, fromGis.features[0].geometry, d.id)
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
     setIsSyncPending(false)
-  }
+  };
 
   // Handler เมื่อกดปุ่ม "รีเซ็ต"
   const handleReset = () => {

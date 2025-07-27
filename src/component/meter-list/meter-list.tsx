@@ -32,26 +32,7 @@ import { Meter } from "@prisma/client";
 import { checkConnectGis, getDataFromGIS } from "@/lib/gis";
 // import PDFComponent from "../pdf/pdf";
 
-const { Text, Title } = Typography;
-
-// กำหนด Type ของข้อมูลสำหรับแต่ละแถว (เหมือนเดิม)
-interface MeterTableData {
-  key: string;
-  id: string;
-  peaNoNew: string;
-  pickerName: string;
-  pickerDate: Date;
-  newMeterImageUrl: string;
-  peaNoOld?: string | null;
-  oldMeterImageUrl?: string | null;
-  installationDate?: Date | null;
-  installationName?: string | null;
-  unitOld?: number | null;
-  unitNew?: number | null;
-  installationLocation?: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
+const { Text } = Typography;
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50];
 

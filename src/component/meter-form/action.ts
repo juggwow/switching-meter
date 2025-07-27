@@ -6,6 +6,7 @@ import { EsriPointGeometry, PeaMeterDetailAttributes } from "@/types/gis";
 import { PhaseInstallation, PhaseSystem } from "@prisma/client";
 import sharp from "sharp";
 import { pick } from "zod/v4-mini";
+import { point, distance } from "@turf/turf";
 
 export const getMeter = async (id: string) => {
   const meterData = await prisma.meter.findUnique({
@@ -13,8 +14,6 @@ export const getMeter = async (id: string) => {
       id: id,
     },
   });
-
-  console.log(meterData);
 
   if (!meterData) throw new Error("Meter not found");
   return meterData;
@@ -271,9 +270,27 @@ export async function updateFromGis(
       peaCode,
       phaseSystem,
       phaseInstallation,
-      meterOldLocation: `${point.y}, ${point.x}`
+      meterOldLocation: `${point.y}, ${point.x}`,
+      userType: data["PEA.METER_DETAIL.USERTYPE"]
     },
   });
+
+  if (!result.installationLocation) return result;
+
+  const [lat1, lon1] = parseLatLngString(result.installationLocation);
+
+  if (!lat1 || !lon1) return result;
+
+  const distance = calculateDistanceTurf(lat1, lon1, point.y, point.x);
+
+  const resultWithDistance = await prisma.meter.update({
+    where : {
+      id
+    },
+    data: {
+      distanceDiff: distance
+    }
+  })
 
   return result;
 }
@@ -284,5 +301,54 @@ export async function exportIsInstalledAndNoDataFromGIS() {
       peaNoOld: { isSet: true },
     },
   });
-  return data
+  return data;
+}
+
+function calculateDistanceTurf(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number,
+  unit: "kilometers" | "miles" | "nauticalmiles" = "kilometers" // Turf.js ใช้ 'kilometers'
+): number {
+  if (lat1 === lat2 && lon1 === lon2) {
+    return 0; // ถ้าจุดเดียวกัน ระยะทางเป็น 0
+  }
+
+  // สร้างจุด GeoJSON จากละติจูดและลองจิจูด
+  // Turf.js point() คาดหวัง [longitude, latitude]
+  const fromPoint = point([lon1, lat1]);
+  const toPoint = point([lon2, lat2]);
+
+  // คำนวณระยะทางโดยใช้ turf.distance()
+  const dist = distance(fromPoint, toPoint, { units: unit });
+
+  return dist;
+}
+
+function parseLatLngString(
+  latLngString: string
+): [number | null, number | null] {
+  // ตรวจสอบว่า string ไม่ว่างเปล่า
+  if (!latLngString) {
+    return [null, null];
+  }
+
+  // ใช้ split(',') เพื่อแยก string ด้วยเครื่องหมายคอมมา
+  const parts = latLngString.split(",");
+
+  // ตรวจสอบว่ามี 2 ส่วนที่แยกออกมาได้
+  if (parts.length === 2) {
+    // ใช้ parseFloat() เพื่อแปลงแต่ละส่วนให้เป็นตัวเลข
+    const lat = parseFloat(parts[0].trim()); // .trim() เพื่อลบช่องว่างที่อาจมี
+    const lon = parseFloat(parts[1].trim()); // .trim() เพื่อลบช่องว่างที่อาจมี
+
+    // ตรวจสอบว่าการแปลงเป็นตัวเลขสำเร็จหรือไม่ (NaN = Not a Number)
+    if (!isNaN(lat) && !isNaN(lon)) {
+      return [lat, lon];
+    }
+  }
+
+  // คืนค่า [null, null] หาก string ไม่ตรงตามรูปแบบที่คาดหวัง หรือแปลงเป็นตัวเลขไม่ได้
+  return [null, null];
 }

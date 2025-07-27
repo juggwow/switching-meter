@@ -81,6 +81,7 @@ export interface PeaMeterDetailAttributes {
   "PEA.METER_DETAIL.KWATTHOURS": number | null; // esriFieldTypeDouble maps to number
   "PEA.METER_DETAIL.CURRDATE": number | null; // esriFieldTypeDate often comes as a Unix timestamp in milliseconds
   "PEA.METER_DETAIL.MATERIALNUMBER": string | null; //
+  "PEA.METER_DETAIL.USERTYPE": string | null;
   // Add other attributes if your data includes them
 }
 
