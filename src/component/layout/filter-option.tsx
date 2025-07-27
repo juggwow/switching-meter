@@ -23,6 +23,7 @@ import {
 import dayjs, { Dayjs } from "dayjs"; // Dayjs สำหรับจัดการวันที่
 import { FilterData } from "@/app/type/filter";
 import { exportMetersToCsv } from "../meter-list/action";
+import { exportIsInstalledAndNoDataFromGIS } from "../meter-form/action";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -41,6 +42,7 @@ interface FilterOptionComponentProps {
   isPending?: boolean;
   mode?: "wait_installation" | "statuslist";
   initialFilters?: FilterData; // ค่า Filter เริ่มต้นจาก Parent
+  canConnectedGis?: boolean;
   onApplyFilters: (filters: FilterData) => void; // Callback เมื่อกด Apply
   onResetFilters: () => void; // Callback เมื่อกด Reset
 }
@@ -49,6 +51,7 @@ export default function FilterOptionComponent({
   isPending,
   mode,
   initialFilters,
+  canConnectedGis,
   onApplyFilters,
   onResetFilters,
 }: FilterOptionComponentProps) {
@@ -70,6 +73,8 @@ export default function FilterOptionComponent({
   const [status, setStatus] = useState<
     "wait_installation" | "is_installed" | "picker_overdue" | "all" | undefined
   >();
+  const [isSyncPending,setIsSyncPending] = useState(false)
+
 
   const handleDownloadCsv = async () => {
     try {
@@ -143,6 +148,17 @@ export default function FilterOptionComponent({
       status: status,
     });
   };
+
+  const handleSyncGis = async () => {
+    setIsSyncPending(true)
+    try {
+      const res = await exportIsInstalledAndNoDataFromGIS()
+      console.log(res)
+    } catch (error) {
+      console.log(error)
+    }
+    setIsSyncPending(false)
+  }
 
   // Handler เมื่อกดปุ่ม "รีเซ็ต"
   const handleReset = () => {
@@ -257,6 +273,16 @@ export default function FilterOptionComponent({
             marginTop: "16px",
           }}
         >
+          {canConnectedGis == true && mode == "statuslist" && (
+            <Button
+              loading={isPending}
+              type="primary"
+              onClick={handleSyncGis}
+              icon={<DownloadOutlined />}
+            >
+              Sync Gis
+            </Button>
+          )}
           {mode == "statuslist" && (
             <Button
               loading={isPending}

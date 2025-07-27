@@ -28,8 +28,9 @@ import {
 } from "@ant-design/icons";
 import FilterOptionComponent from "../layout/filter-option";
 import { FilterData } from "@/app/type/filter";
-import { checkDitoStatus, createPDF } from "@/lib/dito";
 import { Meter } from "@prisma/client";
+import { checkConnectGis, getDataFromGIS } from "@/lib/sync-gis";
+// import PDFComponent from "../pdf/pdf";
 
 const { Text, Title } = Typography;
 
@@ -56,10 +57,8 @@ const PAGE_SIZE_OPTIONS = [10, 20, 50];
 
 export default function MeterListComponent({
   mode,
-  pdfUrl,
 }: {
   mode: "wait_installation" | "statuslist";
-  pdfUrl?: string;
 }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTIONS[0]);
@@ -67,7 +66,7 @@ export default function MeterListComponent({
     status: "wait_installation",
     sortOrder: "desc",
   });
-  const [canDownlaodPDF,setCanDownloadPDF] = useState(false)
+  const [canConnectedGis,setCanConnectedGis] = useState(false)
 
 
   const { data, isLoading, isError, error, isRefetching } = useQuery<
@@ -155,48 +154,16 @@ export default function MeterListComponent({
     }
   };
 
-  const handleOpenPdfInNewTab = async (meter:Meter) => {
-    try {
-      // 1. เรียก Server Action เพื่อรับ Base64 String ของ PDF
-      // (นี่คือ Server Action ของ Next.js ที่คุณใช้เรียก Go Backend อีกที)
-      const base64PdfString:{data:string} = await createPDF(pdfUrl||"",meter); // สมมติว่า Server Action คืนค่า Base64 String
-
-      // 2. แปลง Base64 String กลับเป็น Binary (Blob)
-      const byteCharacters = atob(base64PdfString.data);
-      const byteNumbers = new Array(byteCharacters.length);
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      const byteArray = new Uint8Array(byteNumbers);
-      const pdfBlob = new Blob([byteArray], { type: 'application/pdf' }); // *** MIME Type ต้องเป็น application/pdf ***
-
-      // 3. สร้าง Blob URL
-      const blobUrl = URL.createObjectURL(pdfBlob);
-
-      // 4. เปิด Blob URL ในหน้าต่างใหม่
-      const newWindow = window.open(blobUrl, '_blank');
-
-      // ตรวจสอบว่าหน้าต่างถูกบล็อกโดย Pop-up Blocker หรือไม่
-      if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
-        message.warning('หน้าต่างถูกบล็อก กรุณาอนุญาต Pop-ups สำหรับเว็บไซต์นี้');
-      } else {
-        message.success('เปิด PDF ในหน้าต่างใหม่แล้ว!');
-      }
-
-      // 5. ทำความสะอาด Blob URL (หลังจากเปิดแล้ว)
-      // RevokeObjectUrl ควรทำหลังจากที่เบราว์เซอร์มีโอกาสโหลด PDF จาก Blob แล้ว
-      // setTimeout() เป็นวิธีที่ปลอดภัยกว่าการ revoke ทันที
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
-
-    } catch (error: any) {
-      console.error("Failed to open PDF in new tab:", error);
-      message.error(`ไม่สามารถเปิด PDF ได้: ${error.message}`);
-    }
-  };
-
-  useEffect(() => {
-    checkDitoStatus(pdfUrl||"").then(()=>setCanDownloadPDF(true))
-  },[]);
+  useEffect(()=>{
+    // console.log("checkConnectGis")
+    checkConnectGis().then(()=>{
+      setCanConnectedGis(true)
+    }).catch(()=>{
+      console.log("error")
+      setCanConnectedGis(false)
+    })
+  },[])
+  
   if (isLoading) {
     <p className="text-center">กำลังโหลดข้อมูล...</p>;
   }
@@ -208,6 +175,7 @@ export default function MeterListComponent({
         isPending={isRefetching}
         mode={mode}
         initialFilters={filter}
+        canConnectedGis={canConnectedGis}
         onApplyFilters={(filter) => setFilter(filter)}
         onResetFilters={() => {}}
       />
@@ -367,15 +335,6 @@ export default function MeterListComponent({
                       <Link href={`/picker/${meter.id}`}>
                         <Button type="link">แก้ไขข้อมูลการเบิก</Button>
                       </Link>
-                    )}
-                    {meter.peaNoOld && mode == "statuslist" && (
-                      <Button
-                        type="link"
-                        onClick={()=>handleOpenPdfInNewTab(meter)}
-                        disabled={!canDownlaodPDF}
-                      >
-                        PDF
-                      </Button>
                     )}
                   </div>
                 </Card>

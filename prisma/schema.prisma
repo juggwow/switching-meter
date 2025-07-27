@@ -8,9 +8,9 @@ datasource db {
 }
 
 model Meter {
-  id                   String    @id @default(auto()) @map("_id") @db.ObjectId
+  id                   String             @id @default(auto()) @map("_id") @db.ObjectId
   peaNoNew             String //หมายเลข Pea No ของมิเตอร์ใหม่
-  ca                   String  @default("2000000000")
+  ca                   String             @default("2000000000")
   pickerName           String //ชื่อผู้เบิก
   pickerDate           DateTime //วันที่เบิก
   newMeterImageUrl     String // เก็บ URL หรือ path ของรูปภาพ
@@ -23,14 +23,36 @@ model Meter {
   unitOld              Float? //หน่วยไฟฟ้าเก่า
   unitNew              Float? //หน่วยไฟฟ้าใหม่
   installationLocation String? //ตำแหน่งที่ติดตั้ง
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
+  peaCode              String?
+  phaseInstallation    String?
+  phaseSystem          String?
+  customerName         String?
+  customerAddress      String?
+  metertypeOld         String?
+  materialNumberOld    String?
+  meterOldLocation     String?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
 }
 
 enum UserRole {
   PEA
   OUTSOURCE
   ADMIN // อาจจะเพิ่มบทบาท ADMIN สำหรับผู้ดูแลระบบเอง
+}
+
+enum PhaseSystem {
+  THREEPHASE
+  ONEPHASE
+  OTHER
+}
+
+enum PhaseInstallation {
+  AN
+  BN
+  CN
+  ABCN
+  OTHER
 }
 
 // เพิ่ม model นี้
