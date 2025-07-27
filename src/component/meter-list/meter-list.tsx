@@ -29,7 +29,7 @@ import {
 import FilterOptionComponent from "../layout/filter-option";
 import { FilterData } from "@/app/type/filter";
 import { Meter } from "@prisma/client";
-import { checkConnectGis, getDataFromGIS } from "@/lib/sync-gis";
+import { checkConnectGis, getDataFromGIS } from "@/lib/gis";
 // import PDFComponent from "../pdf/pdf";
 
 const { Text, Title } = Typography;
