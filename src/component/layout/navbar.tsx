@@ -26,6 +26,7 @@ import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { UserRole } from "@prisma/client";
 import { ItemType } from "antd/es/menu/interface";
+import MenuBar from "./menu";
 
 const { Header } = Layout;
 
@@ -103,6 +104,7 @@ export default function Navbar({ appName = "Smart Switching" }: NavbarProps) {
     >
       {/* Logo / App Name */}
       <div className="flex-shrink-0">
+        {/* <MenuBar /> */}
         <Link
           href="/"
           className="text-white text-xl font-semibold whitespace-nowrap"

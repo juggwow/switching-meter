@@ -68,7 +68,7 @@ export default function InstallationFormComponent({ meter }: { meter: Meter }) {
         // เราสามารถ await เพื่อรอให้มันทำงานเสร็จ
         // และเพื่อให้แน่ใจว่าผู้ใช้เห็นข้อความก่อนที่จะเกิดการ redirect
         await message.success("บันทึกข้อมูลเรียบร้อยแล้ว!");
-        router.push(`/installation`);
+        router.back()
       } catch (error) {
         // ในกรณีที่ message.success มีปัญหา (เช่น context หาย)
         // เราจะจับ error ไว้เพื่อไม่ให้แอปพัง และแสดง log ใน console

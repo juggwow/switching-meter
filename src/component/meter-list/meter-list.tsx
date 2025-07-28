@@ -44,11 +44,10 @@ export default function MeterListComponent({
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTIONS[0]);
   const [filter, setFilter] = useState<FilterData>({
-    status: "wait_installation",
+    status: mode == "statuslist" ? "all" : "wait_installation",
     sortOrder: "desc",
   });
-  const [canConnectedGis,setCanConnectedGis] = useState(false)
-
+  const [canConnectedGis, setCanConnectedGis] = useState(false);
 
   const { data, isLoading, isError, error, isRefetching } = useQuery<
     FetchMetersResult,
@@ -135,16 +134,18 @@ export default function MeterListComponent({
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     // console.log("checkConnectGis")
-    checkConnectGis().then(()=>{
-      setCanConnectedGis(true)
-    }).catch(()=>{
-      console.log("error")
-      setCanConnectedGis(false)
-    })
-  },[])
-  
+    checkConnectGis()
+      .then(() => {
+        setCanConnectedGis(true);
+      })
+      .catch(() => {
+        console.log("error");
+        setCanConnectedGis(false);
+      });
+  }, []);
+
   if (isLoading) {
     <p className="text-center">กำลังโหลดข้อมูล...</p>;
   }
