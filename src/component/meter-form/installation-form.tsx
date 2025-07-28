@@ -364,12 +364,12 @@ export default function InstallationFormComponent({ meter }: { meter: Meter }) {
       </Form.Item>
       <Form.Item
         label={<span className="mt-3">สาเหตุการชำรุด</span>}
-        validateStatus={errors.reson ? "error" : ""}
-        help={errors.reson?.message}
+        validateStatus={errors.causeDamage ? "error" : ""}
+        help={errors.causeDamage?.message}
         className="mt-3"
       >
         <Controller
-          name="reson"
+          name="causeDamage"
           control={control}
           render={({ field }) => <Input {...field} />}
         />

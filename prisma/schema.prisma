@@ -10,7 +10,7 @@ datasource db {
 model Meter {
   id                   String    @id @default(auto()) @map("_id") @db.ObjectId
   peaNoNew             String //หมายเลข Pea No ของมิเตอร์ใหม่
-  ca                   String?  
+  ca                   String?
   pickerName           String //ชื่อผู้เบิก
   pickerDate           DateTime //วันที่เบิก
   newMeterImageUrl     String // เก็บ URL หรือ path ของรูปภาพ
@@ -33,7 +33,7 @@ model Meter {
   meterOldLocation     String?
   distanceDiff         Float?
   userType             String?
-  reason               String?
+  causeDamage          String?
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
 }
