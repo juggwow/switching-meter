@@ -99,6 +99,7 @@ export async function submitInstallationForm(
     },
     data: {
       ca: formData.ca,
+      reason: formData.reson,
       peaNoNew: formData.peaNoNew,
       peaNoOld: formData.peaNoOld,
       installationName: formData.installationName,
@@ -288,7 +289,8 @@ export async function updateFromGis(
       id
     },
     data: {
-      distanceDiff: distance
+      distanceDiff: distance,
+      ca: data["PEA.METER_DETAIL.CA"] || result.ca
     }
   })
 

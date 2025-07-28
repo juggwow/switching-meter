@@ -12,6 +12,7 @@ import {
   Typography,
   Col,
   Row,
+  message,
 } from "antd";
 import {
   SearchOutlined,
@@ -175,6 +176,8 @@ export default function FilterOptionComponent({
         console.log(error);
       }
     }
+
+    message.success("ดึงข้อมูลจาก GIS สำเร็จ");
 
     setIsSyncPending(false)
   };

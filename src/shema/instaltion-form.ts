@@ -2,7 +2,8 @@ import z from "zod";
 
 export const installationFormSchema = z.object({
   id: z.string(),
-  ca: z.string(),
+  ca: z.string().optional(),
+  reson: z.string(),
   peaNoNew: z.string().min(1, "กรุณากรอกหมายเลข PEA No."),
   newMeterImage: z.instanceof(File),
   peaNoOld: z.string().min(1, "กรุณากรอกหมายเลข PEA No."),

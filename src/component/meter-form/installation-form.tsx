@@ -209,7 +209,7 @@ export default function InstallationFormComponent({ meter }: { meter: Meter }) {
     // --- โหมดแก้ไข ---
     setValue("peaNoNew", meter.peaNoNew);
     setValue("id", meter.id);
-    setValue("ca",meter.ca)
+    setValue("ca",meter.ca || "")
 
     meter.peaNoOld && setValue("peaNoOld", meter.peaNoOld);
     meter.installationDate
@@ -358,6 +358,18 @@ export default function InstallationFormComponent({ meter }: { meter: Meter }) {
       >
         <Controller
           name="ca"
+          control={control}
+          render={({ field }) => <Input {...field} />}
+        />
+      </Form.Item>
+      <Form.Item
+        label={<span className="mt-3">สาเหตุการชำรุด</span>}
+        validateStatus={errors.reson ? "error" : ""}
+        help={errors.reson?.message}
+        className="mt-3"
+      >
+        <Controller
+          name="reson"
           control={control}
           render={({ field }) => <Input {...field} />}
         />
