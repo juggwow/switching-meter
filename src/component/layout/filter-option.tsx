@@ -297,7 +297,7 @@ export default function FilterOptionComponent({
         >
           {canConnectedGis == true && mode == "statuslist" && (
             <Button
-              loading={isPending}
+              loading={isSyncPending}
               type="primary"
               onClick={handleSyncGis}
               icon={<DownloadOutlined />}
