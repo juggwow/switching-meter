@@ -130,7 +130,7 @@ export default function PickerMeterFormComponent({ meter }: { meter?: Meter }) {
       setValue("peaNoNew", meter.peaNoNew);
       setValue("issuerName", meter.pickerName);
       setValue("issueDate", meter.pickerDate);
-      setValue('ca',meter.ca)
+      setValue('ca',meter.ca || "")
 
       // ถ้ามีรูปภาพเดิม, ให้แสดงใน Upload component
       if (meter.newMeterImageUrl) {

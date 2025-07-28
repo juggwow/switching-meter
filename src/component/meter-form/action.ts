@@ -99,7 +99,7 @@ export async function submitInstallationForm(
     },
     data: {
       ca: formData.ca,
-      reason: formData.reson,
+      causeDamage: formData.causeDamage,
       peaNoNew: formData.peaNoNew,
       peaNoOld: formData.peaNoOld,
       installationName: formData.installationName,
