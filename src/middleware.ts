@@ -45,6 +45,6 @@ export const config = {
     "/installation/:path",
     "/installlation/:path",
     "/admin/:path",
-    "/api/:path",
+    // "/api/:path",
   ],
 };
